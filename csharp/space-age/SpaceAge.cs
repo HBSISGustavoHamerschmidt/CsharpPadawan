@@ -3,6 +3,8 @@ using System;
 public class SpaceAge
 {
 
+    public double OiPaulo { get; set; }
+
     public double Years {get;}
 
     public SpaceAge(double seconds) => Years = seconds / 31557600

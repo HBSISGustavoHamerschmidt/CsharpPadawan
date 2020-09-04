@@ -6,7 +6,7 @@ public class Robot
 {
     private readonly Random _rnd = new Random();
 
-    private static readonly List<string> List = new List<string>();
+    private static readonly HashSet<string> AlreadyExistingRobotNames = new HashSet<string>();
 
     public Robot() => Reset();
 
@@ -14,22 +14,20 @@ public class Robot
 
     public void Reset()
     {
-        while (true)
+        string robotNameNew = string.Empty;
+        do
         {
-            string robotNameNew = string.Empty;
+            
             for (int i = 0; i < 2; i++)
             {
                 char randomChar = (char)_rnd.Next('A', 'Z');
                 robotNameNew += randomChar;
             }
-            robotNameNew += _rnd.Next(999);
+            robotNameNew += $"{_rnd.Next(999):000}";
 
-            if (List.Any(q => q == robotNameNew)) continue;
-
-            List.Add(robotNameNew);
-            Name = robotNameNew;
-            break;
-        }
-
+        } while (AlreadyExistingRobotNames.Any(q => q == robotNameNew) || AlreadyExistingRobotNames == null);
+        
+        AlreadyExistingRobotNames.Add(robotNameNew);
+        Name = robotNameNew;
     }
 }

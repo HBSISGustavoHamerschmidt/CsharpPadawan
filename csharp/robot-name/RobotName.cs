@@ -25,7 +25,7 @@ public class Robot
             }
             robotNameNew += $"{_rnd.Next(999):000}";
 
-        } while (AlreadyExistingRobotNames.Any(q => q == robotNameNew) || AlreadyExistingRobotNames == null);
+        } while (AlreadyExistingRobotNames.Any(q => q == robotNameNew));
         
         AlreadyExistingRobotNames.Add(robotNameNew);
         Name = robotNameNew;

@@ -15,18 +15,18 @@ public class Robot
     public void Reset()
     {
         string robotNameNew = string.Empty;
+
         do
         {
-            
             for (int i = 0; i < 2; i++)
             {
                 char randomChar = (char)_rnd.Next('A', 'Z');
                 robotNameNew += randomChar;
             }
             robotNameNew += $"{_rnd.Next(999):000}";
+        }
+        while (AlreadyExistingRobotNames.Any(q => q == robotNameNew));
 
-        } while (AlreadyExistingRobotNames.Any(q => q == robotNameNew));
-        
         AlreadyExistingRobotNames.Add(robotNameNew);
         Name = robotNameNew;
     }

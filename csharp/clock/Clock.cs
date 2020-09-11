@@ -2,27 +2,20 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.TestPlatform.Common.Interfaces;
 
-public class Clock : IEquatable<Clock>
+public partial class Clock
 {
-    private int Hours { get; set; }
-    private int Minutes { get; set; }
+    private int Hours { get;}
+    private int Minutes { get;}
 
-    public Clock(int minutes)
+    public Clock(int minutes):this(0, minutes)
     {
-        Hours = Minutes / 60;
-        Minutes = minutes % 60;
-        Verification();
     }
 
     public Clock(int hours, int minutes)
     {
         Hours = (hours + (minutes / 60)) % 24;
         Minutes = minutes % 60;
-        Verification();
-    }
 
-    private void Verification()
-    {
         if (Minutes < 0)
         {
             Hours--;
@@ -32,18 +25,11 @@ public class Clock : IEquatable<Clock>
             Hours = 24 + Hours;
     }
 
+    public int ToMinutes() => Hours * 60 + Minutes;
     public Clock Add(int minutesToAdd) => new Clock(Hours, Minutes + minutesToAdd);
     public Clock Subtract(int minutesToSubtract) => new Clock(Hours, Minutes - minutesToSubtract);
 
-     public bool Equals([AllowNull] Clock obj) => 
-         !(obj is null) // Checks if obj is null, if it is return false
-         && (ReferenceEquals(this, obj) || Hours == obj.Hours && Minutes == obj.Minutes);
-
-     public override bool Equals(object obj)
-     {
-
-     }
-     
-
-     public override string ToString() => $"{Hours:0#}:{Minutes:0#}";
+    public override bool Equals(object obj) => ReferenceEquals(this, obj) || obj is Clock clock && Equals(clock);
+    public override int GetHashCode() => HashCode.Combine(Hours, Minutes);
+    public override string ToString() => $"{Hours:0#}:{Minutes:0#}";
 }

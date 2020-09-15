@@ -10,33 +10,32 @@ public class Tree
 {
     public int Id { get; set; }
     public int ParentId { get; set; }
-    public List<Tree> Children { get; set; }
+    public List<Tree> Children {get;} = new List<Tree>();
     public bool IsLeaf => Children.Count == 0;
+    public static explicit operator Tree(TreeBuildingRecord obj) =>
+        new Tree {Id = obj.RecordId, ParentId = obj.ParentId};
 }
 public static class TreeBuilder
 {
     public static Tree BuildTree(IEnumerable<TreeBuildingRecord> records)
     {
-        records = records.OrderBy(q => q.RecordId);
-        var recordsList = records.ToList();
+        if(!records.Any())
+            throw new ArgumentException();
 
-        var recordListWhere = recordsList.Where((r, index) => 
+        records = records.OrderBy(q => q.RecordId).ToList();
+
+        var recordListWhere = records.Where((r, index) => 
              r.RecordId != index || 
             (r.RecordId == 0 && r.ParentId != 0) || 
             (r.RecordId != 0 && r.ParentId >= r.RecordId)).Any();
 
-        if (!recordsList.Any() || recordListWhere) 
+        if (recordListWhere) 
             throw new ArgumentException();
 
         var trees = new List<Tree>();
-        foreach (var record in recordsList)
+        foreach (var record in records)
         {
-            var t = new Tree
-            {
-                Children = new List<Tree>(),
-                Id = record.RecordId,
-                ParentId = record.ParentId
-            };
+            var t = (Tree) record;
 
             if (record.RecordId != 0)
                 trees.First(i => i.Id == t.ParentId).Children.Add(t);

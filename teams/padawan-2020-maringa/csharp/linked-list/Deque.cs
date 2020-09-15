@@ -2,7 +2,6 @@ namespace LinkedList
 {
     public class Deque<T>
     {
-
         public LinkedListItem<T> FirstOrLastItemFromList(T value) =>
             new LinkedListItem<T>
             {
@@ -10,23 +9,16 @@ namespace LinkedList
                 NodeToHisLeft = null,
                 NodeToHisRight = null
             };
-
         private LinkedListItem<T> Head { get; set; }
-
         private LinkedListItem<T> Tail { get; set; }
-
-
-
         public void Push(T value)
         {
             if (Tail is null)
             {
                 Tail = Head;
-                if (Tail == null)
-                {
-                    Tail = FirstOrLastItemFromList(value);
-                    Head = Tail;
-                }
+                if (Tail != null) return;
+                Tail = FirstOrLastItemFromList(value);
+                Head = Tail;
             }
             else
             {
@@ -44,14 +36,11 @@ namespace LinkedList
                 Tail = insertedItemOnTail;
             }
         }
-
         public T Pop()
         {
             var infoThatIsBeingRemovedFromHeadAndThrownIntoTheVoid = Tail.Information;
-
             if (!(Tail.NodeToHisLeft is null))
                 Tail.NodeToHisLeft.NodeToHisRight = null;
-
             Tail = Tail.NodeToHisLeft;
             return infoThatIsBeingRemovedFromHeadAndThrownIntoTheVoid;
         }
@@ -61,11 +50,9 @@ namespace LinkedList
             if (Head is null)
             {
                 Head = Tail;
-                if (Head == null)
-                {
-                    Head = FirstOrLastItemFromList(value);
-                    Tail = Head;
-                }
+                if (Head != null) return;
+                Head = FirstOrLastItemFromList(value);
+                Tail = Head;
             }
             else
             {

@@ -42,7 +42,7 @@ public static class TreeBuilder
             };
 
             if (record.RecordId != 0)
-                trees.First(i => i.Id == i.ParentId).Children.Add(t);
+                trees.First(i => i.Id == t.ParentId).Children.Add(t);
 
             trees.Add(t);
         }

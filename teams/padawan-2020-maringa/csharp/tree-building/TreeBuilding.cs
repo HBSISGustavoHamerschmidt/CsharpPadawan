@@ -23,10 +23,10 @@ public static class TreeBuilder
         records = records.OrderBy(q => q.RecordId);
 
         var recordsList = records.ToList();
-        var recordListWhere = recordsList.Where((record, indexOfRecord) => record.RecordId != indexOfRecord).Any();
-        var recordListAny = recordsList.Any(record =>
-            (record.RecordId == 0 && record.ParentId != 0) ||
-            (record.RecordId != 0 && record.ParentId >= record.RecordId));
+        var recordListWhere = recordsList.Where((r, index) => r.RecordId != index).Any();
+        var recordListAny = recordsList.Any(r =>
+            (r.RecordId == 0 && r.ParentId != 0) ||
+            (r.RecordId != 0 && r.ParentId >= r.RecordId));
 
         if (recordListAny || !recordsList.Any() || recordListWhere)
             throw new ArgumentException();

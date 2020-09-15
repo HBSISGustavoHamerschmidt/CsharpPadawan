@@ -6,14 +6,17 @@ public class TreeBuildingRecord
     public int ParentId { get; set; }
     public int RecordId { get; set; }
 }
-public class Tree
+public class Tree : TreeBuildingRecord
 {
-    public int Id { get; set; }
-    public int ParentId { get; set; }
+    public Tree(TreeBuildingRecord record)
+    {
+        ParentId = record.ParentId;
+        RecordId = record.RecordId;
+    }
+
     public List<Tree> Children {get;} = new List<Tree>();
     public bool IsLeaf => Children.Count == 0;
-    public static explicit operator Tree(TreeBuildingRecord obj) =>
-        new Tree {Id = obj.RecordId, ParentId = obj.ParentId};
+
 }
 public static class TreeBuilder
 {
@@ -35,13 +38,13 @@ public static class TreeBuilder
         var trees = new List<Tree>();
         foreach (var record in records)
         {
-            var t = (Tree) record;
+            var t = new Tree(record);
 
             if (record.RecordId != 0)
-                trees.First(i => i.Id == t.ParentId).Children.Add(t);
+                trees.First(i => i.RecordId == t.ParentId).Children.Add(t);
 
             trees.Add(t);
         }
-        return trees.First(t => t.Id == 0);
+        return trees.First(t => t.RecordId == 0);
     }
 }

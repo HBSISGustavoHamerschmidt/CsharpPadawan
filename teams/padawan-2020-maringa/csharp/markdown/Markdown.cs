@@ -28,27 +28,21 @@ public static class Markdown
     {
         // Changed for loop to While, eliminating the use of "Break"
         var count = 0;
+
         while (markdown[count] == '#')
             count++;
-        
+
         if (count == 0)
         {
             inListAfter = list;
             return null;
         }
 
-        var headerTag = "h" + count;
-        var headerHtml = Wrap(markdown.Substring(count + 1), headerTag);
-
-        if (list)
-        {
-            inListAfter = false;
-            return "</ul>" + headerHtml;
-        }
-
+        // Simplified statement and removed double attribution of false in inListAfter
+        var headerHtml = Wrap(markdown.Substring(count + 1), $"h{count}");
         inListAfter = false;
-        return headerHtml;
-
+        // Finally, simplified return operation using Ternary Operator
+        return list ? $"</ul>{headerHtml}" : headerHtml;
     }
 
     private static string ParseLineItem(string markdown, bool list, out bool inListAfter)
@@ -56,34 +50,23 @@ public static class Markdown
         if (markdown.StartsWith("*"))
         {
             var innerHtml = Wrap(ParseText(markdown.Substring(2), true), "li");
-
-            if (list)
-            {
-                inListAfter = true;
-                return innerHtml;
-            }
-
+            // Simplified statement, attributed inListAfter to true always and used Ternary Operator to define
+            // the return instead of If.
             inListAfter = true;
-            return "<ul>" + innerHtml;
+            return list ? innerHtml : "<ul>" + innerHtml;
 
         }
-
         inListAfter = list;
         return null;
     }
 
     private static string ParseParagraph(string markdown, bool list, out bool inListAfter)
     {
-        if (!list)
-        {
-            inListAfter = false;
-            return ParseText(markdown, list);
-        }
-        else
-        {
-            inListAfter = false;
-            return "</ul>" + ParseText(markdown, false);
-        }
+        // Simplified statement, attributed inListAfter to false always and used Ternary Operator to define
+        // the return instead of If.
+        inListAfter = false;
+        return list ? "</ul>" + ParseText(markdown, false) : ParseText(markdown, false);
+
     }
     // Changed all the Ifs for the operator "??" and made it so that the command fits in only one line
     private static string ParseLine(string markdown, bool list, out bool inListAfter) =>

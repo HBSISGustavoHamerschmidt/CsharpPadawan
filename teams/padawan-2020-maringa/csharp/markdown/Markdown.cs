@@ -3,33 +3,24 @@ using System.Text.RegularExpressions;
 
 public static class Markdown
 {
-    private static string Wrap(string text, string tag) => "<" + tag + ">" + text + "</" + tag + ">";
+    // Used string interpolation to reduce the size of the string
+    private static string Wrap(string text, string tag) => $"<{tag}>{text}</{tag}>";
 
     // Removed "IsTag" Method that was not being used
 
-    private static string Parse(string markdown, string delimiter, string tag)
+    // Used string interpolation and inserted it directly to the "Method" Replace to make the code easier on the eyes
+    private static string Parse(string markdown, string delimiter, string tag) =>
+        Regex.Replace(markdown, $"{delimiter}(.+){delimiter}", $"<{tag}>$1</{tag}>");
+
+
+
+    private static string ParseText(string markdown, bool isSpecialCharacter)
     {
-        var pattern = delimiter + "(.+)" + delimiter;
-        var replacement = "<" + tag + ">$1</" + tag + ">";
-        return Regex.Replace(markdown, pattern, replacement);
-    }
+        // Inserted the previously existing Methods "Parse_(ParseItalic) and Parse__(ParseStrong) directly into
+        // parsedText, where they were being used.
+        var parsedText = Parse(Parse(markdown, "__", "strong"), "_", "em");
 
-    private static string Parse__(string markdown) => Parse(markdown, "__", "strong");
-
-    private static string Parse_(string markdown) => Parse(markdown, "_", "em");
-
-    private static string ParseText(string markdown, bool list)
-    {
-        var parsedText = Parse_(Parse__((markdown)));
-
-        if (list)
-        {
-            return parsedText;
-        }
-        else
-        {
-            return Wrap(parsedText, "p");
-        }
+        return isSpecialCharacter ? parsedText : Wrap(parsedText, "p");
     }
 
     private static string ParseHeader(string markdown, bool list, out bool inListAfter)

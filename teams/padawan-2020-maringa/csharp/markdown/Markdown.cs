@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Text.RegularExpressions;
 
 public static class Markdown
@@ -19,26 +20,17 @@ public static class Markdown
         // Inserted the previously existing Methods "Parse_(ParseItalic) and Parse__(ParseStrong) directly into
         // parsedText, where they were being used.
         var parsedText = Parse(Parse(markdown, "__", "strong"), "_", "em");
-
+        // To Ternary Operator
         return isSpecialCharacter ? parsedText : Wrap(parsedText, "p");
     }
 
     private static string ParseHeader(string markdown, bool list, out bool inListAfter)
     {
+        // Changed for loop to While, eliminating the use of "Break"
         var count = 0;
-
-        for (int i = 0; i < markdown.Length; i++)
-        {
-            if (markdown[i] == '#')
-            {
-                count += 1;
-            }
-            else
-            {
-                break;
-            }
-        }
-
+        while (markdown[count] == '#')
+            count++;
+        
         if (count == 0)
         {
             inListAfter = list;
@@ -53,11 +45,10 @@ public static class Markdown
             inListAfter = false;
             return "</ul>" + headerHtml;
         }
-        else
-        {
-            inListAfter = false;
-            return headerHtml;
-        }
+
+        inListAfter = false;
+        return headerHtml;
+
     }
 
     private static string ParseLineItem(string markdown, bool list, out bool inListAfter)
@@ -71,11 +62,10 @@ public static class Markdown
                 inListAfter = true;
                 return innerHtml;
             }
-            else
-            {
-                inListAfter = true;
-                return "<ul>" + innerHtml;
-            }
+
+            inListAfter = true;
+            return "<ul>" + innerHtml;
+
         }
 
         inListAfter = list;
@@ -95,34 +85,20 @@ public static class Markdown
             return "</ul>" + ParseText(markdown, false);
         }
     }
-
-    private static string ParseLine(string markdown, bool list, out bool inListAfter)
-    {
-        var result = ParseHeader(markdown, list, out inListAfter);
-
-        if (result == null)
-        {
-            result = ParseLineItem(markdown, list, out inListAfter);
-        }
-
-        if (result == null)
-        {
-            result = ParseParagraph(markdown, list, out inListAfter);
-        }
-
-        if (result == null)
-        {
-            throw new ArgumentException("Invalid markdown");
-        }
-
-        return result;
-    }
+    // Changed all the Ifs for the operator "??" and made it so that the command fits in only one line
+    private static string ParseLine(string markdown, bool list, out bool inListAfter) =>
+        ParseHeader(markdown, list, out inListAfter) ??
+        ParseLineItem(markdown, list, out inListAfter) ??
+        ParseParagraph(markdown, list, out inListAfter) ??
+        throw new ArgumentException("Invalid markdown");
 
     public static string Parse(string markdown)
     {
         var lines = markdown.Split('\n');
-        var result = "";
+        var result = string.Empty;
         var list = false;
+
+
 
         for (int i = 0; i < lines.Length; i++)
         {
@@ -130,13 +106,6 @@ public static class Markdown
             result += lineResult;
         }
 
-        if (list)
-        {
-            return result + "</ul>";
-        }
-        else
-        {
-            return result;
-        }
+        return list ? result + "</ul>" : result;
     }
 }

@@ -1,20 +1,14 @@
 ﻿using System;
-using System.Numerics;
 using System.Text.RegularExpressions;
 
 public static class Markdown
 {
     // Used string interpolation to reduce the size of the string
     private static string Wrap(string text, string tag) => $"<{tag}>{text}</{tag}>";
-
     // Removed "IsTag" Method that was not being used
-
     // Used string interpolation and inserted it directly to the "Method" Replace to make the code easier on the eyes
     private static string Parse(string markdown, string delimiter, string tag) =>
         Regex.Replace(markdown, $"{delimiter}(.+){delimiter}", $"<{tag}>$1</{tag}>");
-
-
-
     private static string ParseText(string markdown, bool isSpecialCharacter)
     {
         // Inserted the previously existing Methods "Parse_(ParseItalic) and Parse__(ParseStrong) directly into
@@ -23,28 +17,23 @@ public static class Markdown
         // To Ternary Operator
         return isSpecialCharacter ? parsedText : Wrap(parsedText, "p");
     }
-
     private static string ParseHeader(string markdown, bool list, out bool inListAfter)
     {
         // Changed for loop to While, eliminating the use of "Break"
         var count = 0;
-
         while (markdown[count] == '#')
             count++;
-
         if (count == 0)
         {
             inListAfter = list;
             return null;
         }
-
         // Simplified statement and removed double attribution of false in inListAfter
         var headerHtml = Wrap(markdown.Substring(count + 1), $"h{count}");
         inListAfter = false;
         // Finally, simplified return operation using Ternary Operator
         return list ? $"</ul>{headerHtml}" : headerHtml;
     }
-
     private static string ParseLineItem(string markdown, bool list, out bool inListAfter)
     {
         if (markdown.StartsWith("*"))
@@ -54,7 +43,6 @@ public static class Markdown
             // the return instead of If.
             inListAfter = true;
             return list ? innerHtml : "<ul>" + innerHtml;
-
         }
         inListAfter = list;
         return null;
@@ -66,7 +54,6 @@ public static class Markdown
         // the return instead of If.
         inListAfter = false;
         return list ? "</ul>" + ParseText(markdown, false) : ParseText(markdown, false);
-
     }
     // Changed all the Ifs for the operator "??" and made it so that the command fits in only one line
     private static string ParseLine(string markdown, bool list, out bool inListAfter) =>
@@ -74,21 +61,19 @@ public static class Markdown
         ParseLineItem(markdown, list, out inListAfter) ??
         ParseParagraph(markdown, list, out inListAfter) ??
         throw new ArgumentException("Invalid markdown");
-
     public static string Parse(string markdown)
     {
         var lines = markdown.Split('\n');
         var result = string.Empty;
         var list = false;
-
-
-
-        for (int i = 0; i < lines.Length; i++)
+        // Changed For to Foreach to increase readability
+        foreach (var t in lines)
         {
-            var lineResult = ParseLine(lines[i], list, out list);
+            var lineResult = ParseLine(t, list, out list);
             result += lineResult;
         }
-
+        // result = lines.Select(t => ParseLine(t, list, out list))
+        //    .Aggregate(result, (current, lineResult) => current + lineResult);
         return list ? result + "</ul>" : result;
     }
 }

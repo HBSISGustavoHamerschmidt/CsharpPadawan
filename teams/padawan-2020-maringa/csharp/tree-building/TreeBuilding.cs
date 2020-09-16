@@ -13,38 +13,34 @@ public class Tree : TreeBuildingRecord
         ParentId = record.ParentId;
         RecordId = record.RecordId;
     }
-
-    public List<Tree> Children {get;} = new List<Tree>();
+    public List<Tree> Children { get; } = new List<Tree>();
     public bool IsLeaf => Children.Count == 0;
 
 }
+
 public static class TreeBuilder
 {
     public static Tree BuildTree(IEnumerable<TreeBuildingRecord> records)
     {
-        if(!records.Any())
+        if (!(records?.Any() ?? false))
             throw new ArgumentException();
 
-        records = records.OrderBy(q => q.RecordId).ToList();
+        records = records.OrderBy(record => record.RecordId).ToList();
 
-        var recordListWhere = records.Where((r, index) => 
-             r.RecordId != index || 
-            (r.RecordId == 0 && r.ParentId != 0) || 
+        var hasInvalidItems = records.Where((r, index) =>
+            r.RecordId != index ||
+            (r.RecordId == 0 && r.ParentId != 0) ||
             (r.RecordId != 0 && r.ParentId >= r.RecordId)).Any();
 
-        if (recordListWhere) 
+        if (hasInvalidItems)
             throw new ArgumentException();
 
-        var trees = new List<Tree>();
-        foreach (var record in records)
+        var trees = records.Select((record) => new Tree(record)).ToList();
+        trees.ForEach(item =>
         {
-            var t = new Tree(record);
-
-            if (record.RecordId != 0)
-                trees.First(i => i.RecordId == t.ParentId).Children.Add(t);
-
-            trees.Add(t);
-        }
-        return trees.First(t => t.RecordId == 0);
+            if (item.RecordId > 0)
+                trees.First(record => record.RecordId == item.ParentId).Children.Add(item);
+        });
+        return trees.First();
     }
 }

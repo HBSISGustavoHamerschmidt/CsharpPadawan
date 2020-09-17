@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 
 public class LedgerEntry
 {
@@ -44,7 +46,7 @@ public static class Ledger
            "USD" => "$",
            "EUR" => "€",
        };
-        // Used String Interpolation and padding to format strings
+        // Used String Interpolation and 
        switch (locale)
        {
            case "en-US":
@@ -58,55 +60,42 @@ public static class Ledger
                 break;
        }
 
-       var culture = new CultureInfo(locale);
-       culture.NumberFormat.CurrencySymbol = currencySymbol;
-       culture.NumberFormat.CurrencyNegativePattern = curNeg;
-       culture.DateTimeFormat.ShortDatePattern = datPat;
+       var culture = new CultureInfo(locale)
+       {
+           NumberFormat = {CurrencySymbol = currencySymbol, CurrencyNegativePattern = curNeg},
+           DateTimeFormat = {ShortDatePattern = datPat}
+       };
        return (culture, format);
    }
 
-   // Incorporated PrintHead onto CreateCulture
-   
-   private static string Date(IFormatProvider culture, DateTime date) => date.ToString("d", culture);
+    // Incorporated "PrintHead" onto "CreateCulture"
 
-   private static string Description(string desc)
+    // Inserted "Date" Method into "PrintEntry" Method
+
+    // Inserted "Description" Method into "PrintEntry" Method
+
+    // Inserted "Change" Method into "PrintEntry" Method
+    private static string PrintEntry(IFormatProvider culture, LedgerEntry entry)
    {
-       if (desc.Length > 25)
-       {
-           var trunc = desc.Substring(0, 22);
-           trunc += "...";
-           return trunc;
-       }
+       var date = entry.Date.ToString("d", culture);
 
-       return desc;
-   }
+       var description = entry.Description.Length > 25 ?
+           $"{entry.Description.Substring(0, 22)}..." :
+           entry.Description;
 
-   private static string Change(IFormatProvider culture, decimal cgh)
-   {
-       return cgh < 0.0m ? cgh.ToString("C", culture) : cgh.ToString("C", culture) + " ";
-   }
+       var change = entry.Change < 0.0m ? entry.Change.ToString("C", culture) : $"{entry.Change.ToString("C", culture)} ";
 
-   private static string PrintEntry(IFormatProvider culture, LedgerEntry entry)
-   {
-       var formatted = "";
-       var date = Date(culture, entry.Date);
-       var description = Description(entry.Description);
-       var change = Change(culture, entry.Change);
 
-       formatted += date;
-       formatted += " | ";
-       formatted += string.Format("{0,-25}", description);
-       formatted += " | ";
-       formatted += string.Format("{0,13}", change);
-
-       return formatted;
+        var format = new StringBuilder();
+        format.Append(date).Append(" | ").Append($"{description,-25}").Append(" | ").Append($"{change,13}");
+        return format.ToString();
    }
 
 
-   private static IEnumerable<LedgerEntry> sort(LedgerEntry[] entries)
+   private static IEnumerable<LedgerEntry> Sort(LedgerEntry[] entries)
    {
-       var neg = entries.Where(e => e.Change < 0).OrderBy(x => x.Date + "@" + x.Description + "@" + x.Change);
-       var post = entries.Where(e => e.Change >= 0).OrderBy(x => x.Date + "@" + x.Description + "@" + x.Change);
+       var neg = entries.Where(e => e.Change < 0).OrderBy(x => $"{x.Date}@{x.Description}@{x.Change}");
+       var post = entries.Where(e => e.Change >= 0).OrderBy(x => $"{x.Date}@{x.Description}@{x.Change}");
 
        var result = new List<LedgerEntry>();
        result.AddRange(neg);
@@ -125,7 +114,7 @@ public static class Ledger
 
        if (entries.Length > 0)
        {
-           var entriesForOutput = sort(entries);
+           var entriesForOutput = Sort(entries);
 
            for (var i = 0; i < entriesForOutput.Count(); i++)
            {

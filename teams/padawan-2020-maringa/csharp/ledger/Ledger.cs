@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -21,32 +20,24 @@ public class LedgerEntry
 
 public static class Ledger
 {
-    // Changed the name of the variables that were badly written.
-
-    // To expression body
     public static LedgerEntry CreateEntry(string date, string desc, int change) =>
         new LedgerEntry(DateTime.Parse(date, CultureInfo.InvariantCulture), desc, change / 100.0m);
 
-
     private static (CultureInfo, string) CreateCulture(string currency, string locale)
     {
-        string currencySymbol = null;
         int curNeg = 0;
         string datPat = null;
         string format = string.Empty;
 
-        // Changed validation Ifs to a single if to reduce code redundancy.
         if ((currency != "USD" && currency != "EUR") || (locale != "nl-NL" && locale != "en-US"))
             throw new ArgumentException("Invalid currency");
 
-#pragma warning disable 8509
-        currencySymbol = currency switch
-#pragma warning restore 8509
+        string currencySymbol = currency switch
         {
             "USD" => "$",
             "EUR" => "€",
         };
-        // Used String Interpolation and 
+
         switch (locale)
         {
             case "en-US":
@@ -68,13 +59,6 @@ public static class Ledger
         return (culture, format);
     }
 
-    // Incorporated "PrintHead" onto "CreateCulture"
-
-    // Inserted "Date" Method into "PrintEntry" Method
-
-    // Inserted "Description" Method into "PrintEntry" Method
-
-    // Inserted "Change" Method into "PrintEntry" Method
     private static string PrintEntry(IFormatProvider culture, LedgerEntry entry)
     {
         var date = entry.Date.ToString("d", culture);

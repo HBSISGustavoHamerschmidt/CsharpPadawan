@@ -26,75 +26,47 @@ public static class Ledger
        new LedgerEntry(DateTime.Parse(date, CultureInfo.InvariantCulture), desc, change / 100.0m);
    
 
-   private static CultureInfo CreateCulture(string currency, string locale)
+   private static (CultureInfo, string) CreateCulture(string currency, string locale)
    {
        string currencySymbol = null;
        int curNeg = 0;
        string datPat = null;
+       string format = string.Empty;
 
        // Changed validation Ifs to a single if to reduce code redundancy.
        if ((currency != "USD" && currency != "EUR") || (locale != "nl-NL" && locale != "en-US"))
            throw new ArgumentException("Invalid currency");
-       
 
-       
-       if (currency == "USD")
+#pragma warning disable 8509
+       currencySymbol = currency switch
+#pragma warning restore 8509
        {
-           if (locale == "en-US")
-           {
-               currencySymbol = "$";
+           "USD" => "$",
+           "EUR" => "€",
+       };
+        // Used String Interpolation and padding to format strings
+       switch (locale)
+       {
+           case "en-US":
                datPat = "MM/dd/yyyy";
-           }
-           else if (locale == "nl-NL")
-           {
-               currencySymbol = "$";
+               format = $"{"Date"?.PadRight(11,' ')}| {"Description"?.PadRight(26, ' ')}| {"Change"?.PadRight(13, ' ')}";
+               break;
+           case "nl-NL":
                curNeg = 12;
                datPat = "dd/MM/yyyy";
-           }
-       }
-
-       if (currency == "EUR")
-       {
-           if (locale == "en-US")
-           {
-               currencySymbol = "€";
-               datPat = "MM/dd/yyyy";
-           }
-           else if (locale == "nl-NL")
-           {
-               currencySymbol = "€";
-               curNeg = 12;
-               datPat = "dd/MM/yyyy";
-           }
+               format = $"{"Datum"?.PadRight(11, ' ')}| {"Omschrijving"?.PadRight(26, ' ')}| {"Verandering"?.PadRight(13, ' ')}"; ;
+                break;
        }
 
        var culture = new CultureInfo(locale);
        culture.NumberFormat.CurrencySymbol = currencySymbol;
        culture.NumberFormat.CurrencyNegativePattern = curNeg;
        culture.DateTimeFormat.ShortDatePattern = datPat;
-       return culture;
+       return (culture, format);
    }
 
-   private static string PrintHead(string loc)
-   {
-       if (loc == "en-US")
-       {
-           return "Date       | Description               | Change       ";
-       }
-
-       else
-       {
-           if (loc == "nl-NL")
-           {
-               return "Datum      | Omschrijving              | Verandering  ";
-           }
-           else
-           {
-               throw new ArgumentException("Invalid locale");
-           }
-       }
-   }
-
+   // Incorporated PrintHead onto CreateCulture
+   
    private static string Date(IFormatProvider culture, DateTime date) => date.ToString("d", culture);
 
    private static string Description(string desc)
@@ -145,8 +117,9 @@ public static class Ledger
 
    public static string Format(string currency, string locale, LedgerEntry[] entries)
    {
-       var formatted = "";
-       formatted += PrintHead(locale);
+       // var formatted = "";
+       // formatted += PrintHead(locale);
+       
 
        var culture = CreateCulture(currency, locale);
 
@@ -156,10 +129,10 @@ public static class Ledger
 
            for (var i = 0; i < entriesForOutput.Count(); i++)
            {
-               formatted += "\n" + PrintEntry(culture, entriesForOutput.Skip(i).First());
+               culture.Item2 += "\n" + PrintEntry(culture.Item1, entriesForOutput.Skip(i).First());
            }
        }
 
-       return formatted;
+       return culture.Item2;
    }
 }

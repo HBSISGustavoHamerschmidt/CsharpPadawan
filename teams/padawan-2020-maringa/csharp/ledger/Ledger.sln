@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30406.217
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ledger", "Ledger.csproj", "{A3BB8278-3C7A-49F7-A214-14B7F0431618}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A3BB8278-3C7A-49F7-A214-14B7F0431618}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3BB8278-3C7A-49F7-A214-14B7F0431618}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3BB8278-3C7A-49F7-A214-14B7F0431618}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3BB8278-3C7A-49F7-A214-14B7F0431618}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CF87D1E7-2C85-4851-9D54-5A8A195E3727}
+	EndGlobalSection
+EndGlobal

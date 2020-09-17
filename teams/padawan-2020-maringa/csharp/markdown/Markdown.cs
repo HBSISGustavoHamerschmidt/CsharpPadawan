@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -27,7 +26,6 @@ public static class Markdown
     {
         // Changed for loop to While, eliminating the use of "Break"
         var count = 0;
-
         while (markdown[count] == '#')
             count++;
 
@@ -74,8 +72,7 @@ public static class Markdown
     public static string Parse(string markdown)
     {
         // Changed For to Foreach to increase readability and changed to StringBuilder
-
-        var lines = markdown.Split(Environment.NewLine);
+        var lines = markdown.Split("\n");
         var result = new StringBuilder();
         var list = false;
 
